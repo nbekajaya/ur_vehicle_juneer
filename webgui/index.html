@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Rover GUI</title>
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script src="vendor/apriltag-js/js/tag-families.js"></script>
+    <script src="vendor/apriltag-js/js/overlay-renderer.js"></script>
+    <script src="vendor/apriltag-js/js/detector-manager.js"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Rover</h1>
+        <div id="status">
+            <span id="transport-status">transport: disconnected</span>
+            <span id="camera-status">camera: off</span>
+            <span id="vision-status">vision: idle</span>
+        </div>
+        <div id="actions">
+            <button id="btn-connect">Connect</button>
+            <button id="btn-disconnect" disabled>Disconnect</button>
+            <button id="btn-camera">Start Camera</button>
+            <button id="btn-estop" class="danger">E-STOP</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="camera-area">
+            <video id="camera" autoplay muted playsinline style="display:none"></video>
+              <canvas id="displayCanvas"></canvas>
+        </section>
+
+        <aside id="side">
+        <section id="filters">
+            <h2>Filters</h2>
+        </section>
+
+        <section id="vision">
+            <h2>Vision</h2>
+            <div id="vision-list">No tags</div>
+        </section>
+        <section id="help">
+            <h2>Controls</h2>
+            <p>W/A/S/D for Direction</p>
+            <p>J/K for Magnitude</p>
+            <p>Space to stop</p>
+            <canvas id="vector-display"></canvas>
+        </section>
+        </aside>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>`
