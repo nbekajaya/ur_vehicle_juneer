@@ -3,7 +3,7 @@
 rover/
 ├── README.md
 │
-├── firmware/                     # ESP32-S3, PlatformIO, Arduino
+├── firmware/                     # ESP32-S3, PlatformIO, Arduino TODO
 │   ├── platformio.ini
 │   └── src/
 │       ├── main.cpp
@@ -38,11 +38,7 @@ rover/
         │
         ├── camera/
         │   ├── camera.js
-        │   ├── filter_state.js
-        │   ├── filter_pipeline.js
-        │   └── filters/
-        │       ├── css_renderer.js
-        │       └── gl_shaders.js          # later, WebGL path
+        │   └── filter_state.js
         │
         ├── vision/
         │   ├── detector.js
@@ -67,6 +63,7 @@ rover/
         └── ui/
             ├── status.js
             ├── filter_panel.js
+            ├── vector_display.js
             └── vision_panel.js
 ```
 
