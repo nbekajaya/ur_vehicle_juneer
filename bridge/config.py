@@ -2,7 +2,7 @@
 # Windows:   "COM5" (check Device Manager)
 # Linux:     "/dev/ttyUSB0" or "/dev/ttyACM0"
 # macOS:     "/dev/cu.usbserial-XXXX" (check `ls /dev/cu.*`)
-SERIAL_PORT = "COM5"
+SERIAL_PORT = "/dev/cu.usbserial"
 
 # Must match the ESP firmware.
 SERIAL_BAUD = 115200

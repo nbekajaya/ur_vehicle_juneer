@@ -5,11 +5,12 @@ export const Config = {
     maxSpeed: 1.0,
 
     // Camera
-    cameraWidth: 640,
-    cameraHeight: 480,
+    cameraWidth: 1920,
+    cameraHeight: 1080,
 
     detectionWidth: 640,      // processing canvas width (height derived from video aspect)
     detectionHz: 12,
+
     tagFamily: "tag36h11",
     hammingDist: 0,
     detectorParams: {
@@ -18,6 +19,7 @@ export const Config = {
         refineEdges: true,
         decodeSharpening: 0.25,
     },
+
     overlay: {
         box: true,
         corners: true,

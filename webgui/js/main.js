@@ -17,6 +17,8 @@ import { VisionPanel } from "./ui/vision_panel.js";
 import { VectorDisplay } from "./ui/vector_display.js";
 import { InputState } from "./input/input_state.js";
 
+import { NetworkPanel } from "./ui/network_panel.js";
+
 // --- DOM refs ---
 const videoEl       = document.getElementById("camera");
 const displayCanvas = document.getElementById("displayCanvas");
@@ -44,6 +46,11 @@ const commandLoop = new CommandLoop(transport, Config);
 const camera = new Camera(videoEl);
 const filterPanel = new FilterPanel(filterRoot, FilterState);
 
+const networkPanel = new NetworkPanel(
+  document.getElementById("network-panel"),
+  transport
+);
+
 (async () => {
   status.setVision("loading...");
   try {
@@ -63,24 +70,28 @@ const filterPanel = new FilterPanel(filterRoot, FilterState);
 console.log("main.js loaded");
 
 // canvas sizing
+function ensureDisplaySize() {
+  if (!videoEl.videoWidth) return;
+  if (displayCanvas.width  !== videoEl.videoWidth ||
+      displayCanvas.height !== videoEl.videoHeight) {
+    displayCanvas.width  = videoEl.videoWidth;
+    displayCanvas.height = videoEl.videoHeight;
+  }
+}
+
 function ensureProcessingSize() {
   if (!videoEl.videoWidth) return;
+
   const aspect = videoEl.videoWidth / videoEl.videoHeight;
   const w = Config.detectionWidth;
   const h = Math.round(w / aspect);
-  if (processingCanvas.width !== w || processingCanvas.height !== h) {
-    processingCanvas.width = w;
+
+  if (processingCanvas.width  !== w ||
+      processingCanvas.height !== h) {
+    processingCanvas.width  = w;
     processingCanvas.height = h;
   }
-};
-
-function ensureDisplaySize() {
-  if (!videoEl.videoWidth) return;
-  if (displayCanvas.width !== videoEl.videoWidth) {
-    displayCanvas.width = videoEl.videoWidth;
-    displayCanvas.height = videoEl.videoHeight;
-  }
-};
+}
 
 function maybeStartDetection(now) {
   if (!visionReady || !camera.isRunning()) return;
@@ -110,7 +121,17 @@ function maybeStartDetection(now) {
 }
 
 // --- Transport wiring ---
-transport.onStatus((s) => status.setTransport(s));
+transport.onStatus((s) => {
+  status.setTransport(s);
+  networkPanel.setConnected(s === "connected");
+});
+
+transport.onLine((line) => {
+  const msg = Protocol.parseLine(line);
+  if (msg.type === "network") {
+    networkPanel.push(msg.text);
+  }
+});
 
 function renderVision() {
   if (!camera.isRunning() || !videoEl.videoWidth) return;
@@ -136,11 +157,24 @@ const vectorDisplay = new VectorDisplay(
 initKeyboard();
 
 // --- Main render loop ---
+let fpsFrames = 0;
+let fpsLastUpdate = performance.now()
+const FPS_UPDATE_MS = 1000;
+
 function frame(now) {
   pollKeyboard();
   vectorDisplay.update(InputState);
   renderVision();
   maybeStartDetection(now);
+
+  fpsFrames++;
+  if (now - fpsLastUpdate >= FPS_UPDATE_MS){
+    const fps = Math.round((fpsFrames * FPS_UPDATE_MS) / (now - fpsLastUpdate));
+    status.setFps(fps);
+    fpsFrames = 0;
+    fpsLastUpdate = now;
+  }
+
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

@@ -12,7 +12,7 @@ export class FilterPanel {
     this._slider("contrast",   0.1, 3.0, 0.01);
     this._slider("saturation", 0.0, 3.0, 0.01);
     this._slider("hue",      -180, 180, 1);
-    this._slider("blur",       0,   10, 0.1);
+    this._slider("blur",       0,   50, 0.1);
 
     const reset = document.createElement("button");
     reset.textContent = "Reset";

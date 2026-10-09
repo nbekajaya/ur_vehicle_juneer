@@ -1,3 +1,5 @@
+import { Config } from "../config.js"
+
 export class Camera {
   constructor(videoEl) {
     this.video = videoEl;
@@ -7,8 +9,17 @@ export class Camera {
   async start(deviceId = null) {
     const constraints = {
       video: deviceId
-        ? { deviceId: { exact: deviceId } }
-        : { width: 640, height: 480 },
+        ? { 
+            deviceId: { exact: deviceId },
+            width: {ideal: Config.cameraWidth},
+            height: {ideal: Config.cameraHeight}, 
+            aspectRatio: {ideal: Config.cameraWidth/Config.cameraHeight},
+          }
+        : { 
+            width: {ideal: Config.cameraWidth},
+            height: {ideal: Config.cameraHeight}, 
+            aspectRatio: {ideal: Config.cameraWidth/Config.cameraHeight},
+          },
       audio: false,
     };
     this.stream = await navigator.mediaDevices.getUserMedia(constraints);

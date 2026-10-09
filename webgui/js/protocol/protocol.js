@@ -6,6 +6,14 @@ export const Protocol = {
   encodeStop() { return "S"; },
   encodePing() { return "P"; },
 
+  encodeMessage(text) {
+    const clean = String(text || "")
+      .replace(/[\r\n]+/g, " ")       // no newlines on the wire
+      .replace(/[^\x20-\x7E]/g, "")   // ASCII-printable only
+      .slice(0, 64);                  // firmware buffer bound
+    return `M ${clean}`;
+  },
+
   // ESP -> Browser
   parseLine(line) {
     const parts = line.trim().split(/\s+/);
@@ -21,6 +29,9 @@ export const Protocol = {
       }
       case "PONG":
         return { type: "pong" };
+      case "N":
+        // Everything after "N " is the message, spaces preserved.
+        return { type: "network", text: line.trim().slice(2) };
       default:
         return { type: "unknown", raw: line };
     }

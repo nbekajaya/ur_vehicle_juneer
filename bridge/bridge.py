@@ -7,6 +7,8 @@ import serial
 import serial.tools.list_ports
 import websockets
 
+from mock_serial import MockSerial
+
 from config import SERIAL_PORT, SERIAL_BAUD, WS_HOST, WS_PORT, LOG_RAW, USE_MOCK_SERIAL
 
 logging.basicConfig(
@@ -174,66 +176,6 @@ async def main() -> None:
         log.info(f"websocket server listening on ws://{WS_HOST}:{WS_PORT}")
         log.info("waiting for browser client...")
         await asyncio.Future()  # run forever
-
-class MockSerial:
-    """
-    Stands in for a real ESP32-S3. Same interface as pyserial.Serial
-    for the methods we use: readline(), write(), is_open, close().
-
-    Echoes every command it receives and emits fake telemetry periodically.
-    """
-
-    def __init__(self, baud: int):
-        self.baud = baud
-        self.is_open = True
-        self._incoming = bytearray()   # bytes "from the ESP" to the bridge
-        self._lock = threading.Lock()
-        self._encL = 0
-        self._encR = 0
-        self._tick = 0
-        self._running = True
-        self._thread = threading.Thread(target=self._tick_loop, daemon=True)
-        self._thread.start()
-
-    def _tick_loop(self):
-        """Emit telemetry every 500 ms."""
-        while self._running:
-            time.sleep(0.5)
-            self._tick += 1
-            self._encL += 3
-            self._encR += 2
-            battery = 11.8 - (self._tick * 0.001)
-            line = f"T {self._encL} {self._encR} {battery:.2f}\n".encode()
-            with self._lock:
-                self._incoming.extend(line)
-
-    def readline(self) -> bytes:
-        """Block until a line is available, or return b'' on a short poll."""
-        deadline = time.time() + 1.0
-        while time.time() < deadline:
-            with self._lock:
-                idx = self._incoming.find(b"\n")
-                if idx >= 0:
-                    line = bytes(self._incoming[:idx + 1])
-                    del self._incoming[:idx + 1]
-                    return line
-            time.sleep(0.02)
-        return b""
-
-    def write(self, data: bytes) -> int:
-        """Receive a command, echo it back as if we were the ESP."""
-        text = data.decode(errors="replace").strip()
-        # Simulate an ACK/echo line the bridge will broadcast to the browser.
-        if text.startswith("D ") or text == "S" or text == "P":
-            ack = f"ACK {text}\n".encode()
-            with self._lock:
-                self._incoming.extend(ack)
-        return len(data)
-
-    def close(self):
-        self._running = False
-        self.is_open = False
-
 
 if __name__ == "__main__":
     try:

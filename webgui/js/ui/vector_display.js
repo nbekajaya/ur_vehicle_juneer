@@ -99,7 +99,9 @@ export class VectorDisplay {
         endY - ah * Math.sin(angle + Math.PI / 6)
       );
       ctx.stroke();
-    } else {
+    } 
+    
+    else {
       ctx.fillStyle = "#00e676";
       ctx.beginPath();
       ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
