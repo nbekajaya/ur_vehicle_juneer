@@ -17,6 +17,7 @@ rover/
 │
 ├── bridge/                       # Local WebSocket <-> serial bridge
 │   ├── bridge.py
+│   ├── mock_serial.py
 │   ├── requirements.txt
 │   └── config.py
 │
@@ -30,7 +31,7 @@ rover/
     │   └── icons/
     │ 
     ├── vendor/
-    │   └── apriltag-js/js/
+    │   └── apriltag-js/js/ (get from https://github.com/AliAliMohamad/apriltag-js)
     │ 
     └── js/
         ├── main.js
@@ -70,6 +71,18 @@ rover/
 # Abstract
 Template for rover control with web GUI and serial communication to MUC via python websocket.
 
+# Modules Guide
+## `webgui`
+Simple HTML, JS, and CSS. Self-explanatory
+
+## `bridge`
+Python websocket to serial conversion. 
+
+**Important!** Change `config.py` according to your needs. Especially 
+- `USE_MOCK_SERIAL`, this is for bridge testing.
+- `SERIAL_PORT`, which port you're communicating with. See implementation in `bridge.SerialLink`.
+
+
 # Quickstart
 1. Open three terminals!
 
@@ -85,7 +98,7 @@ pip install -r requirements.txt
 ```
 python bridge.py
 ```
-3. connect from `webgui` at `https://localhost:8000` once its active!
+3. connect from `webgui` at `https://localhost:8000` once it's active!
 
 ## `webgui` terminal
 1. prep `webgui`
@@ -103,9 +116,12 @@ python -m http.serve 8000
 1. TODO
 
 # TODO
-1. Firmware to control Thrusters
-2. Implement Wi-Fi Connection
-3. AprilTag Filters and Params
+## `firmware`
+1. ALL
+## `webgui`
+1. None so far
+## `bridge`
+1. None so far
 
 # Attributions
 `apriltag-js` from [AprilTag JS by AliAlimohamad](https://github.com/AliAliMohamad/apriltag-js)
